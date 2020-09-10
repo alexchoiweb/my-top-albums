@@ -9,7 +9,7 @@ services:
     ports:
       - "2345:5432"
     volumes:
-      - ./pgdata:/var/lib/postgresql/data
+      - mytopalbums:/var/lib/postgresql/data
   server:
     build: ./server/
     ports:
@@ -23,3 +23,6 @@ services:
     ports:
       - "3000:3000"
     stdin_open: true
+
+volumes:
+  mytopalbums:
