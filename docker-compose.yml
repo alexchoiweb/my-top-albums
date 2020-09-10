@@ -1,0 +1,25 @@
+version: "3"
+services:
+  database:
+    image: postgres
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pw
+      POSTGRES_DB: db
+    ports:
+      - "2345:5432"
+    volumes:
+      - ${DB_VOLUME_FILE_PATH}
+  server:
+    build: ./server/
+    ports:
+      - "5000:5000"
+    depends_on:
+      - database
+    volumes:
+      - .:/usr/src/app
+  client:
+    build: ./client/
+    ports:
+      - "3000:3000"
+    stdin_open: true
