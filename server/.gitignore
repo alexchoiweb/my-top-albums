@@ -1,5 +1,5 @@
 /*.env
 /node_modules
 /client/node_modules
-/db-hidden.sql
+db-hidden.sql
 db.js
