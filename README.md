@@ -7,7 +7,3 @@ Built with Node.js, React, react-beautiful-dnd, Bootstrap, SASS, PostgreSQL
 Powered by [last.fm API](https://www.last.fm/api/) 🎷
 
 Netlify [Live site](https://my-top-albums.netlify.app/) 🕊️
-# my
-# my
-# my
-# my-top-albums
