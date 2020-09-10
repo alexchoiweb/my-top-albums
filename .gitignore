@@ -1,5 +1,4 @@
 *.env
 *pgdata*
 
-db.sql
-db-hidden.sql
+db-commands.sql
