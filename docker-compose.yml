@@ -1,4 +1,5 @@
-version: "3"
+version: "3.6"
+
 services:
   database:
     image: postgres
@@ -10,6 +11,7 @@ services:
       - "2345:5432"
     volumes:
       - mytopalbums:/var/lib/postgresql/data
+
   server:
     build: ./server/
     ports:
@@ -17,12 +19,30 @@ services:
     depends_on:
       - database
     volumes:
-      - .:/usr/src/app
+      - "./server:/usr/src/app"
+      - "/usr/src/app/node_modules"
+    environment:
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true
+    # volumes:
+    #   - .:/workspace:cached
+    #   command: /bin/sh -c "while sleep 1000; do :; done"
+    #   links:
+    #     - client
+
   client:
-    build: ./client/
+    build:
+      context: ./client/
+      dockerfile: Dockerfile
     ports:
       - "3000:3000"
+    volumes:
+      - "./client:/usr/src/app/"
+      - "/usr/src/app/node_modules"
     stdin_open: true
+    environment:
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true
 
 volumes:
   mytopalbums:

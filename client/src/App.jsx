@@ -178,7 +178,7 @@ export default function App() {
   return (
     <div className="App col-12">
       <button onClick={addUser}>Add User</button>
-      <h1>my-top-albums</h1>
+      <h1>my-top-albumz</h1>
       <input
         ref={searchRef}
         type="text"
