@@ -31,7 +31,7 @@ app.post('/data', async (req, res) => {
 })
 
 app.get('/', (request, response) => {
-  response.json({ info: 'It works very good jobsz!' })
+  response.json({ info: 'It works very good job!' })
 })
 
 // Listen
