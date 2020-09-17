@@ -27,6 +27,7 @@ services:
     environment:
       - NODE_ENV=production
       - CHOKIDAR_USEPOLLING=true
+      - REACT_APP_SIGNAL=${DOCKER_VAR}
     depends_on:
       - node-prod
 

@@ -56,7 +56,7 @@ const addUser = async () => {
 };
 
 export default function App() {
-  console.log(process.env.REACT_APP_SIGNAL);
+  console.log(`Did we get env variables: ${process.env.REACT_APP_SIGNAL}`);
   // console.log(process.env.REACT_APP_ROOT_URL);
   const [dragData, setDragData] = useState(initialData);
   const [searchInput, setSearchInput] = useState(null);
@@ -68,6 +68,7 @@ export default function App() {
 
   const searchAlbums = (searchInput) => {
     const url = `${process.env.REACT_APP_ROOT_URL}?method=album.search&album=${searchInput}&api_key=${process.env.REACT_APP_API_KEY}&format=json`;
+    console.log(`Searching albums - fetching: ${url}`);
     fetch(url)
       .then((res) => res.json())
       .then((data) => {
