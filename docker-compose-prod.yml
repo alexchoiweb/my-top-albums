@@ -1,0 +1,57 @@
+version: "3.6"
+
+services:
+  node-prod:
+    build:
+      context: ./services/node
+      dockerfile: Dockerfile-prod
+    # ports:
+    #   - 5000:5000
+    volumes:
+      - "./services/node:/usr/src/app"
+      - "/usr/src/app/node_modules"
+    environment:
+      - NODE_ENV=production
+      - CHOKIDAR_USEPOLLING=true
+    depends_on:
+      - postgres-prod
+
+  client-prod:
+    build:
+      context: ./services/client/
+      dockerfile: Dockerfile-prod
+    # volumes:
+    #   - "./services/client:/usr/src/app/"
+    #   - "/usr/src/app/node_modules"
+    stdin_open: true
+    environment:
+      - NODE_ENV=production
+      - CHOKIDAR_USEPOLLING=true
+      - REACT_APP_SIGNAL=${DOCKER_VAR}
+    depends_on:
+      - node-prod
+
+  nginx-prod:
+    build:
+      context: ./services/nginx/
+      dockerfile: Dockerfile-prod
+    ports:
+      - 80:80
+    depends_on:
+      - node-prod
+      - client-prod
+    restart: always
+
+  postgres-prod:
+    image: postgres
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pw
+      POSTGRES_DB: db
+    ports:
+      - 2345:5432
+    volumes:
+      - mytopalbums:/var/lib/postgresql/data
+
+volumes:
+  mytopalbums:

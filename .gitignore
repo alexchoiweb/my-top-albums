@@ -1,4 +1,2 @@
-*.env
-*pgdata*
-
 db-commands.sql
+.env

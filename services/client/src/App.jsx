@@ -12,11 +12,26 @@ const Container = styled.div`
   flex-direction: column;
 `;
 
-fetch("http://localhost:5000/users")
+console.log(process.env.NODE_ENV);
+
+fetch("/api/users")
   .then((res) => res.json())
   .then((data) => {
-    console.log("Fetching users data");
+    console.log("Calling server success");
     console.log(data);
+  })
+  .catch((err) => {
+    console.log(err);
+  });
+
+fetch("/api/data")
+  .then((res) => res.json())
+  .then((data) => {
+    console.log("Calling database success");
+    console.log(data);
+  })
+  .catch((err) => {
+    console.log(err);
   });
 
 const addUser = async () => {
@@ -41,6 +56,8 @@ const addUser = async () => {
 };
 
 export default function App() {
+  console.log(`Did we get env variables: ${process.env.REACT_APP_SIGNAL}`);
+  // console.log(process.env.REACT_APP_ROOT_URL);
   const [dragData, setDragData] = useState(initialData);
   const [searchInput, setSearchInput] = useState(null);
 
@@ -51,6 +68,7 @@ export default function App() {
 
   const searchAlbums = (searchInput) => {
     const url = `${process.env.REACT_APP_ROOT_URL}?method=album.search&album=${searchInput}&api_key=${process.env.REACT_APP_API_KEY}&format=json`;
+    console.log(`Searching albums - fetching: ${url}`);
     fetch(url)
       .then((res) => res.json())
       .then((data) => {

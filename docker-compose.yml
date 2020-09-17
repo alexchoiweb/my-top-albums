@@ -1,48 +1,58 @@
 version: "3.6"
 
 services:
-  database:
+  postgres:
     image: postgres
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: pw
       POSTGRES_DB: db
     ports:
-      - "2345:5432"
+      - 2345:5432
     volumes:
       - mytopalbums:/var/lib/postgresql/data
 
-  server:
-    build: ./server/
-    ports:
-      - "5000:5000"
-    depends_on:
-      - database
+  node:
+    build:
+      context: ./services/node
+      dockerfile: Dockerfile-dev
     volumes:
-      - "./server:/usr/src/app"
+      - "./services/node:/usr/src/app"
       - "/usr/src/app/node_modules"
+    #    ports:
+    #      - 3001:3001
     environment:
       - NODE_ENV=development
       - CHOKIDAR_USEPOLLING=true
-    # volumes:
-    #   - .:/workspace:cached
-    #   command: /bin/sh -c "while sleep 1000; do :; done"
-    #   links:
-    #     - client
+    depends_on:
+      - postgres
 
   client:
     build:
-      context: ./client/
-      dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
+      context: ./services/client/
+      dockerfile: Dockerfile-dev
+    # ports:
+    #   - 3000:3000
     volumes:
-      - "./client:/usr/src/app/"
+      - "./services/client:/usr/src/app/"
       - "/usr/src/app/node_modules"
-    stdin_open: true
     environment:
       - NODE_ENV=development
       - CHOKIDAR_USEPOLLING=true
+    stdin_open: true
+    depends_on:
+      - node
+
+  nginx:
+    build:
+      context: ./services/nginx
+      dockerfile: Dockerfile-dev
+    restart: always
+    ports:
+      - 80:80
+    depends_on:
+      - node
+      - client
 
 volumes:
   mytopalbums:
