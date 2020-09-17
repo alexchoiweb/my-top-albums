@@ -6,9 +6,8 @@ Built with Node.js, React, react-beautiful-dnd, Bootstrap, SASS, PostgreSQL
 
 Powered by [last.fm API](https://www.last.fm/api/) 🎷
 
-Contributors:
 
-### Usage
+## Usage
 
 Must have Docker installed
 
