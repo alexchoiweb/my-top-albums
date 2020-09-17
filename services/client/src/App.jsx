@@ -12,11 +12,26 @@ const Container = styled.div`
   flex-direction: column;
 `;
 
-fetch("http://localhost:5000/users")
+console.log(process.env.NODE_ENV);
+
+fetch("/api/users")
   .then((res) => res.json())
   .then((data) => {
-    console.log("Fetching users data");
+    console.log("Calling server success");
     console.log(data);
+  })
+  .catch((err) => {
+    console.log(err);
+  });
+
+fetch("/api/data")
+  .then((res) => res.json())
+  .then((data) => {
+    console.log("Calling database success");
+    console.log(data);
+  })
+  .catch((err) => {
+    console.log(err);
   });
 
 const addUser = async () => {
@@ -41,6 +56,8 @@ const addUser = async () => {
 };
 
 export default function App() {
+  console.log(process.env.REACT_APP_SIGNAL);
+  // console.log(process.env.REACT_APP_ROOT_URL);
   const [dragData, setDragData] = useState(initialData);
   const [searchInput, setSearchInput] = useState(null);
 
@@ -178,7 +195,7 @@ export default function App() {
   return (
     <div className="App col-12">
       <button onClick={addUser}>Add User</button>
-      <h1>my-top-albums</h1>
+      <h1>my-top-albumz</h1>
       <input
         ref={searchRef}
         type="text"

@@ -1,47 +1,61 @@
 version: "3.6"
 
 services:
-  database:
+  postgres:
     image: postgres
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: pw
       POSTGRES_DB: db
     ports:
-      - "2345:5432"
+      - 2345:5432
     volumes:
       - mytopalbums:/var/lib/postgresql/data
 
-  server:
+  node:
     build:
-      context: ./services/server/
+      context: ./services/node
       dockerfile: Dockerfile-dev
-    ports:
-      - "5000:5000"
     volumes:
-      - "./services/server:/usr/src/app"
+      - "./services/node:/usr/src/app"
       - "/usr/src/app/node_modules"
+    #    ports:
+    #      - 3001:3001
     environment:
       - NODE_ENV=development
       - CHOKIDAR_USEPOLLING=true
     depends_on:
-      - database
+      - postgres
 
   client:
     build:
       context: ./services/client/
       dockerfile: Dockerfile-dev
-    ports:
-      - "3000:3000"
+    # ports:
+    #   - 3000:3000
     volumes:
       - "./services/client:/usr/src/app/"
       - "/usr/src/app/node_modules"
-    stdin_open: true
+    # env_file:
+    #   - dev.env
     environment:
       - NODE_ENV=development
       - CHOKIDAR_USEPOLLING=true
+      - REACT_APP_SIGNAL=${DOCKER_VAR}
+    stdin_open: true
     depends_on:
-      - server
+      - node
+
+  nginx:
+    build:
+      context: ./services/nginx
+      dockerfile: Dockerfile-dev
+    restart: always
+    ports:
+      - 80:80
+    depends_on:
+      - node
+      - client
 
 volumes:
   mytopalbums:

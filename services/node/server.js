@@ -8,9 +8,20 @@ require('dotenv').config();
 app.use(cors());
 app.use(express.json());
 
+console.log('node env from the server');
+console.log(process.env.NODE_ENV)
+
 //ROUTES
+app.get('/api/users', function (req, res) {
+  res.json([
+    "Sally",
+    "Bernie",
+    "Robbie",
+  ]);
+});
+
 // GET USERS
-app.get('/data', (request, response) => {
+app.get('/api/data', (request, response) => {
   let q = 'SELECT * FROM data';
   pool.query(q, (error, results) => {
     if (error) { throw error }
@@ -19,7 +30,7 @@ app.get('/data', (request, response) => {
 })
 
 // CREATE USER
-app.post('/data', async (req, res) => {
+app.post('/api/data', async (req, res) => {
   try {
 
     const newUser = await pool.query(`INSERT INTO data (data) VALUES ('New User')`);
@@ -35,5 +46,7 @@ app.get('/', (request, response) => {
 })
 
 // Listen
-const PORT = process.env.PORT || 5000;
+// const PORT = process.env.PORT || 5001;
+const PORT = 3001;
+
 app.listen(PORT, () => console.log(`Server started on ${PORT}`))
