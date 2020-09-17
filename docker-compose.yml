@@ -39,9 +39,6 @@ services:
     environment:
       - NODE_ENV=development
       - CHOKIDAR_USEPOLLING=true
-      - REACT_APP_SIGNAL=${DOCKER_VAR}
-      - REACT_APP_ROOT_URL=${REACT_APP_ROOT_URL}
-      - REACT_APP_API_KEY=${REACT_APP_API_KEY}
     stdin_open: true
     depends_on:
       - node
