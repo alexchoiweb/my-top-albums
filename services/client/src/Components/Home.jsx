@@ -10,15 +10,15 @@ console.log(
   `env variables from client are online?: ${process.env.REACT_APP_SIGNAL}`
 );
 
-fetch("/api/users")
-  .then((res) => res.json())
-  .then((data) => {
-    console.log("Calling server success");
-    console.log(data);
-  })
-  .catch((err) => {
-    console.log(err);
-  });
+// fetch("/api/users")
+//   .then((res) => res.json())
+//   .then((data) => {
+//     console.log("Calling server success");
+//     console.log(data);
+//   })
+//   .catch((err) => {
+//     console.log(err);
+//   });
 
 fetch("/api/data")
   .then((res) => res.json())
@@ -36,27 +36,6 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
 `;
-
-const addUser = async () => {
-  console.log("Add User clicked");
-  try {
-    const body = {
-      username: "Hello",
-      first_name: "Goodbye",
-      last_name: "Moonbeam",
-      email: "HelloMoon@gmail.com",
-    };
-    const res = await fetch("http://localhost:5000/users", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-
-    window.location = "/";
-  } catch (err) {
-    console.error(err.message);
-  }
-};
 
 export default function Home() {
   // console.log(process.env.REACT_APP_ROOT_URL);
@@ -197,7 +176,6 @@ export default function Home() {
 
   return (
     <div className="App col-12">
-      <button onClick={addUser}>Add User</button>
       <h1>my-top-albumz</h1>
       <input
         ref={searchRef}
