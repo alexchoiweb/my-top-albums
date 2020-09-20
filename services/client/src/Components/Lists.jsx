@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 
-const useFetch = () => {
-  const [data, setData] = useState(null);
+export default function Lists() {
+  const [lists, setLists] = useState(null);
   const [loading, setLoading] = useState(true);
   const myHeaders = new Headers();
   myHeaders.append(
     "Authorization",
-    `Bearer ${JSON.parse(localStorage.getItem("tokens")).accessToken}`
+    `Bearer ${JSON.parse(localStorage.getItem("accessToken"))}`
   );
 
   useEffect(() => {
@@ -16,18 +16,11 @@ const useFetch = () => {
     })
       .then((res) => res.json())
       .then((data) => {
-        setData(data);
+        setLists(data);
         setLoading(false);
       })
       .catch((err) => console.log(err));
   }, []);
-
-  return { data, loading };
-};
-
-export default function Lists() {
-  const { data, loading } = useFetch();
-  const lists = data;
 
   return (
     <div className="Lists">

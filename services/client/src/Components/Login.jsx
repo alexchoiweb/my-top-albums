@@ -1,27 +1,32 @@
 import React, { useState, useRef } from "react";
 
 export default function Login(props) {
-  const [username, setUsername] = useState("Josh");
-  const [password, setPassword] = useState("Allen");
-  const usernameRef = useRef(null);
+  const [email, setEmail] = useState("email");
+  const [password, setPassword] = useState("pw");
+  const emailRef = useRef(null);
   const passwordRef = useRef(null);
 
-  const submitHandler = (e) => {
+  const submitHandler = async (e) => {
     e.preventDefault();
 
-    fetch("/api/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ username: username, password: password }),
-    })
-      .then((res) => res.json())
-      .then((data) => localStorage.setItem("tokens", JSON.stringify(data)))
-      .catch((err) => console.log(err));
+    try {
+      console.log(email, password);
+      const response = await fetch("/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: email, password: password }),
+      });
+      const data = await response.json();
+      console.log(data);
+      localStorage.setItem("accessToken", JSON.stringify(data.accessToken));
+      localStorage.setItem("refreshToken", JSON.stringify(data.refreshToken));
 
-    console.log(localStorage);
-    props.history.push("/lists");
+      props.history.push("/lists");
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
@@ -30,11 +35,11 @@ export default function Login(props) {
 
       <form onSubmit={submitHandler}>
         <input
-          ref={usernameRef}
+          ref={emailRef}
           type="text"
-          name="username"
-          placeholder="username"
-          onChange={() => setUsername(usernameRef.current.value)}
+          name="email"
+          placeholder="email"
+          onChange={() => setEmail(emailRef.current.value)}
         ></input>
         <input
           ref={passwordRef}

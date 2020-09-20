@@ -1,10 +1,10 @@
 import React, { useState, useRef } from "react";
 
 export default function Register() {
-  const [username, setUsername] = useState("Terry");
-  const [password, setPassword] = useState("McLaurin");
-  const [passwordConfirm, setPasswordConfirm] = useState("McLaurin");
-  const usernameRef = useRef(null);
+  const [email, setEmail] = useState("asdf");
+  const [password, setPassword] = useState("asdf");
+  const [passwordConfirm, setPasswordConfirm] = useState("asdf");
+  const emailRef = useRef(null);
   const passwordRef = useRef(null);
   const passwordConfirmRef = useRef(null);
 
@@ -20,11 +20,12 @@ export default function Register() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          username: username,
+          email: email,
           password: password,
         }),
       });
     }
+    //redirect to login
   };
 
   return (
@@ -33,11 +34,11 @@ export default function Register() {
 
       <form onSubmit={submitHandler}>
         <input
-          ref={usernameRef}
+          ref={emailRef}
           type="text"
-          name="username"
-          placeholder="username"
-          onChange={() => setUsername(usernameRef.current.value)}
+          name="email"
+          placeholder="email"
+          onChange={() => setEmail(emailRef.current.value)}
         ></input>
         <input
           ref={passwordRef}
