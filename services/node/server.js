@@ -7,8 +7,6 @@ const pool = require('./db');
 const nodemailer = require('nodemailer');
 require('dotenv').config();
 
-
-
 // middleware
 app.use(cors());
 app.use(express.json());
@@ -53,15 +51,6 @@ app.get('/api/lists', authenticateToken, async function (req, res) {
   res.json(lists.rows)
 })
 
-
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.EMAIL,
-    pass: process.env.EMAIL_PASSWORD
-  }
-})
-
 // Register a new user
 app.post('/api/register', async (req, res) => {
   try {
@@ -74,8 +63,13 @@ app.post('/api/register', async (req, res) => {
     } else {
       const hashedPassword = await bcrypt.hash(req.body.password, 10);
       const newUser = await pool.query(`INSERT INTO users (email, password, confirmed) VALUES ($1, $2, false)`, [email, hashedPassword]);
-
-      // send confirmation email
+      const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: process.env.EMAIL,
+          pass: process.env.EMAIL_PASSWORD
+        }
+      })
       const emailToken = jwt.sign({ email: email }, process.env.EMAIL_SECRET, { expiresIn: '1d' }, (err, emailToken) => {
         const url = `http://localhost/api/confirmation/${emailToken}`
         const mailOptions = {
@@ -123,15 +117,16 @@ app.post('/api/login', async (req, res) => {
   const user = data.rows[0];
 
   // Fail if user is not confirmed
-  console.log(user.confirmed);
+  // console.log(user.confirmed);
 
   if (user == null) return res.status(400).send('Cannot find email');
 
   try {
     if (await bcrypt.compare(req.body.password, user.password)) {
+      console.log('new tokens created');
       const accessToken = generateAccessToken(user);
       const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET);
-      refreshTokens.push(refreshToken);
+      const saveToken = pool.query('INSERT INTO tokens (token) VALUES ($1)', [refreshToken])
       res.json({ accessToken: accessToken, refreshToken: refreshToken })
     } else {
       res.send('Wrong password');
@@ -142,22 +137,28 @@ app.post('/api/login', async (req, res) => {
   }
 })
 
-let refreshTokens = [];
-
 // Refresh Token
-app.post('/api/token', (req, res) => {
+app.post('/api/token', async (req, res) => {
   const refreshToken = req.body.token
   if (refreshToken == null) return res.sendStatus(401);
-  if (!refreshTokens.includes(refreshToken)) return res.sendStatus(403);
-  jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
-    if (err) return res.sendStatus(403)
-    const accessToken = generateAccessToken({ name: user.username })
-    res.json({ accessToken: accessToken })
-  })
+  const data = await pool.query("SELECT * FROM tokens");
+  const serverTokens = data.rows
+
+  const tokenExistsInDb = serverTokens.filter((serverToken) => serverToken.token === refreshToken);
+  if (tokenExistsInDb.length === 0) {
+    console.log('Refresh token does not exist in db')
+    res.sendStatus(403);
+  } else {
+    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
+      if (err) return res.sendStatus(403)
+      const accessToken = generateAccessToken({ name: user.username })
+      res.json({ accessToken: accessToken })
+    })
+  }
 })
 
-app.delete('/api/logout', (req, res) => {
-  refreshTokens = refreshTokens.filter(token => token != req.body.token);
+app.delete('/api/logout', async (req, res) => {
+  const data = await pool.query("DELETE FROM tokens WHERE token = $1", [req.body.token]);
   res.sendStatus(204);
 })
 
