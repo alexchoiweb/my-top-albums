@@ -1,9 +1,9 @@
 import React from "react";
 import { Route, BrowserRouter as Router } from "react-router-dom";
-import Home from "./Components/Home";
-import Register from "./Components/Register";
-import Login from "./Components/Login";
-import Lists from "./Components/Lists";
+import Home from "./Pages/Home";
+import Lists from "./Pages/Lists";
+import Login from "./Pages/Login";
+import Register from "./Pages/Register";
 
 export default function App() {
   return (

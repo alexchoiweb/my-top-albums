@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Nav from "./Nav.jsx";
+import Nav from "../Components/Nav.jsx";
 
 export default function Lists() {
   const [lists, setLists] = useState(null);

@@ -75,13 +75,14 @@ router.post('/api/login', async (req, res) => {
   const user = data.rows[0];
 
   // Fail if user is not confirmed
-  // console.log(user.confirmed);
+  if (!user.confrimed) {
+    console.log('User email is not confirmed')
+  }
 
   if (user == null) return res.status(400).send('Cannot find email');
 
   try {
     if (await bcrypt.compare(req.body.password, user.password)) {
-      console.log('new tokens created');
       const accessToken = generateAccessToken(user);
       const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
       const saveToken = pool.query('INSERT INTO tokens (token) VALUES ($1)', [refreshToken])
@@ -95,30 +96,8 @@ router.post('/api/login', async (req, res) => {
   }
 });
 
-// Refresh Token
-app.post('/api/refresh', async (req, res) => {
-  const refreshToken = req.body.token
-  if (refreshToken == null) return res.sendStatus(401);
-  const data = await pool.query("SELECT * FROM tokens");
-  const serverTokens = data.rows
-
-  const tokenExistsInDb = serverTokens.filter((serverToken) => serverToken.token === refreshToken);
-  if (tokenExistsInDb.length === 0) {
-    console.log('Refresh token does not exist in db')
-    res.sendStatus(403);
-  } else {
-    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
-      if (err) return res.sendStatus(403)
-      const accessToken = generateAccessToken({ name: user.username })
-      res.json({ accessToken: accessToken })
-    })
-  }
-})
-
-app.delete('/api/logout', async (req, res) => {
-  const data = await pool.query("DELETE FROM tokens WHERE token = $1", [req.body.token]);
-  res.sendStatus(204);
-  res.redirect('/login')
+router.delete('/api/logout/:token', async (req, res) => {
+  const data = await pool.query("DELETE FROM tokens WHERE token = $1", [req.params.token]);
 })
 
 module.exports = router;

@@ -2,7 +2,7 @@ import React, { useState, useRef } from "react";
 import { DragDropContext } from "react-beautiful-dnd";
 import styled from "styled-components";
 import initialData from "../initial-data";
-import Row from "./Row";
+import Row from "../Components/Row";
 import { v4 as uuid } from "uuid";
 
 console.log(`Node environment is: ${process.env.NODE_ENV}`);

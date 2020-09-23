@@ -16,6 +16,11 @@ app.use(router);
 
 console.log(`Server node environment is: ${process.env.NODE_ENV}`)
 
+const isLoggedIn = (req, res, next) => {
+  if (req.user) { next }
+  else { res.redirect('/api/login') }
+}
+
 const generateAccessToken = (user) => { return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '5s' }); }
 
 const generateAccessTokenFromRefreshToken = async (refreshToken) => {
@@ -47,7 +52,6 @@ const authenticateToken = async (req, res, next) => {
     if (err && refreshToken) {
       const { user, newAccessToken } = await generateAccessTokenFromRefreshToken(refreshToken);
       req.user = user;
-      console.log('got new access token')
       // save new access token in local storage
       next();
     } else if (err && refreshToken === undefined) {

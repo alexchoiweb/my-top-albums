@@ -10,7 +10,6 @@ export default function Login(props) {
     e.preventDefault();
 
     try {
-      console.log(email, password);
       const response = await fetch("/api/login", {
         method: "POST",
         headers: {
