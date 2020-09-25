@@ -1,6 +1,17 @@
 version: "3.6"
 
 services:
+  postgres-prod:
+    image: postgres
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pw
+      POSTGRES_DB: db
+    ports:
+      - 2345:5432
+    volumes:
+      - mytopalbums:/var/lib/postgresql/data
+
   node-prod:
     build:
       context: ./services/node
@@ -20,14 +31,14 @@ services:
     build:
       context: ./services/client/
       dockerfile: Dockerfile-prod
-    # volumes:
-    #   - "./services/client:/usr/src/app/"
-    #   - "/usr/src/app/node_modules"
-    stdin_open: true
+    volumes:
+      - "./services/client:/usr/src/app/"
+      - "/usr/src/app/node_modules"
     environment:
       - NODE_ENV=production
       - CHOKIDAR_USEPOLLING=true
-      - REACT_APP_SIGNAL=${DOCKER_VAR}
+      # - REACT_APP_SIGNAL=${DOCKER_VAR}
+    stdin_open: true
     depends_on:
       - node-prod
 
@@ -41,17 +52,6 @@ services:
       - node-prod
       - client-prod
     restart: always
-
-  postgres-prod:
-    image: postgres
-    environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: pw
-      POSTGRES_DB: db
-    ports:
-      - 2345:5432
-    volumes:
-      - mytopalbums:/var/lib/postgresql/data
 
 volumes:
   mytopalbums:

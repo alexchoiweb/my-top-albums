@@ -31,8 +31,6 @@ services:
     build:
       context: ./services/client/
       dockerfile: Dockerfile-dev
-    # ports:
-    #   - 3000:3000
     volumes:
       - "./services/client:/usr/src/app/"
       - "/usr/src/app/node_modules"
