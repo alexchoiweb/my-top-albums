@@ -74,7 +74,7 @@ router.post('/api/login', async (req, res) => {
   const user = data.rows[0];
 
   // Fail if user is not confirmed
-  if (!user.confrimed) {
+  if (!user.confirmed) {
     console.log('User email is not confirmed')
   }
 
