@@ -1,2 +1,3 @@
-db-commands.sql
+db*.sql
 .env
+requests.rest
