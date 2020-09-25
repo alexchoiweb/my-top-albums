@@ -1,5 +1,4 @@
 const express = require('express');
-const app = express();
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -95,6 +94,28 @@ router.post('/api/login', async (req, res) => {
     res.status(500).send();
   }
 });
+
+// Refresh Token
+router.post('/api/refreshToken', async (req, res) => {
+  const { refreshToken } = req.body
+  if (!refreshToken) return res.sendStatus(401);
+  const serverTokens = await pool.query("SELECT * FROM tokens");
+  const tokenMatches = serverTokens.rows.filter((serverToken) => serverToken.token === refreshToken);
+  const tokenExistsInDb = tokenMatches.length > 0;
+
+  if (tokenExistsInDb) {
+    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
+      if (err) { return res.sendStatus(403).send({ error: true, message: 'Invalid refresh token' }) }
+      else {
+        const accessToken = generateAccessToken({ user })
+        res.json({ accessToken })
+      }
+    })
+  } else {
+    console.log('Refresh token does not exist in db')
+    res.send(403);
+  }
+})
 
 router.delete('/api/logout/:token', async (req, res) => {
   const data = await pool.query("DELETE FROM tokens WHERE token = $1", [req.params.token]);

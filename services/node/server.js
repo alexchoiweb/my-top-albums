@@ -1,10 +1,8 @@
 const express = require('express');
 const app = express();
 const cors = require('cors');
-const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const pool = require('./db');
-const nodemailer = require('nodemailer');
 require('dotenv').config();
 const router = require('./routes/user.js')
 
@@ -18,7 +16,7 @@ console.log(`Server node environment is: ${process.env.NODE_ENV}`)
 
 const isLoggedIn = (req, res, next) => {
   if (req.user) { next }
-  else { res.redirect('/api/login') }
+  else { console.log('no req.user!'); res.send(401, "Unauthorized") }
 }
 
 const generateAccessToken = (user) => { return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '5s' }); }
@@ -30,7 +28,7 @@ const generateAccessTokenFromRefreshToken = async (refreshToken) => {
 
   const tokenExistsInDb = serverTokens.filter((serverToken) => serverToken.token === refreshToken);
   if (tokenExistsInDb.length === 0) {
-    return console.log('Refresh token does not exist in db')
+    console.log('Refresh token does not exist in db')
   } else {
     try {
       const user = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
@@ -52,6 +50,7 @@ const authenticateToken = async (req, res, next) => {
     if (err && refreshToken) {
       const { user, newAccessToken } = await generateAccessTokenFromRefreshToken(refreshToken);
       req.user = user;
+      req.newAccessToken = newAccessToken
       // save new access token in local storage
       next();
     } else if (err && refreshToken === undefined) {

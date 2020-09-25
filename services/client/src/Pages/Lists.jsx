@@ -21,6 +21,7 @@ export default function Lists() {
     })
       .then((res) => res.json())
       .then((data) => {
+        console.log(data);
         setLists(data);
         setLoading(false);
       })
