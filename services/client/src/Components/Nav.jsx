@@ -11,10 +11,31 @@ export default function Nav(props) {
 
     localStorage.removeItem("refreshToken");
     localStorage.removeItem("accessToken");
-    window.location = "/login";
+    window.location = "/";
   };
   return (
     <div>
+      <button
+        onClick={() => {
+          window.location = "/";
+        }}
+      >
+        Home
+      </button>
+      <button
+        onClick={() => {
+          window.location = "/lists";
+        }}
+      >
+        Lists
+      </button>
+      <button
+        onClick={() => {
+          window.location = "/login";
+        }}
+      >
+        Login
+      </button>
       <button
         onClick={() => {
           logout();

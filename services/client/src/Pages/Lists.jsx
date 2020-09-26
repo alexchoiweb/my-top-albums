@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import Nav from "../Components/Nav.jsx";
 
 export default function Lists() {
   const [lists, setLists] = useState(null);
@@ -30,7 +29,6 @@ export default function Lists() {
 
   return (
     <div className="Lists">
-      <Nav />
       <h1>Lists Page</h1>
       {loading ? (
         <div>Loading...</div>

@@ -106,7 +106,7 @@ router.post('/api/isLoggedIn', async (req, res) => {
         res.send('JWT not valid')
       }
       else {
-        res.send({ isLoggedIn: true })
+        res.send({ isLoggedIn: true, user: user })
       }
     })
   } catch (err) {

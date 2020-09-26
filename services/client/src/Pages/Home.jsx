@@ -5,8 +5,6 @@ import initialData from "../initial-data";
 import Row from "../Components/Row";
 import { v4 as uuid } from "uuid";
 
-import Nav from "../Components/Nav";
-
 console.log(`Node environment is: ${process.env.NODE_ENV}`);
 console.log(
   `env variables from client are online?: ${process.env.REACT_APP_SIGNAL}`
@@ -178,7 +176,6 @@ export default function Home() {
 
   return (
     <div className="App col-12">
-      <Nav />
       <h1>my-top-albumz</h1>
       <input
         ref={searchRef}
