@@ -16,11 +16,11 @@ services:
     build:
       context: ./services/node
       dockerfile: Dockerfile-dev
+      # ports:
+      #   - 3001:3001
     volumes:
       - "./services/node:/usr/src/app"
       - "/usr/src/app/node_modules"
-    #    ports:
-    #      - 3001:3001
     environment:
       - NODE_ENV=development
       - CHOKIDAR_USEPOLLING=true
