@@ -8,7 +8,7 @@ require('dotenv').config();
 
 const router = express.Router();
 
-const generateAccessToken = (user) => { return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '5s' }); }
+const generateAccessToken = (user) => { return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1d' }); }
 
 const authenticateEmailToken = (req, res, next) => {
   const token = req.params.token;
@@ -94,6 +94,25 @@ router.post('/api/login', async (req, res) => {
     res.status(500).send();
   }
 });
+
+// Verify JWT / isLoggedIn
+router.post('/api/isLoggedIn', async (req, res) => {
+  const accessToken = JSON.parse(req.body.token);
+  console.log(req.body.token)
+  try {
+    jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET, async (err, user) => {
+      if (err) {
+        console.log(err)
+        res.send('JWT not valid')
+      }
+      else {
+        res.send({ isLoggedIn: true })
+      }
+    })
+  } catch (err) {
+    console.log(err)
+  }
+})
 
 // Refresh Token
 router.post('/api/refreshToken', async (req, res) => {
