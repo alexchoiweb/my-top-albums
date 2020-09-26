@@ -37,6 +37,7 @@ services:
     environment:
       - NODE_ENV=development
       - CHOKIDAR_USEPOLLING=true
+      # - REACT_APP_SIGNAL=${DOCKER_VAR}
     stdin_open: true
     depends_on:
       - node
@@ -45,12 +46,12 @@ services:
     build:
       context: ./services/nginx
       dockerfile: Dockerfile-dev
-    restart: always
     ports:
       - 80:80
     depends_on:
       - node
       - client
+    restart: always
 
 volumes:
   mytopalbums:

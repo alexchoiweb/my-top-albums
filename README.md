@@ -6,7 +6,6 @@ Built with Node.js, React, react-beautiful-dnd, Bootstrap, SASS, PostgreSQL
 
 Powered by [last.fm API](https://www.last.fm/api/) 🎷
 
-
 ## Usage
 
 Must have Docker installed
@@ -18,6 +17,7 @@ To start the dev server, use `docker-compose up`
 #### Production
 
 To run production, use `docker-compose -f docker-compose-prod.yml up`
+or `docker-compose -f docker-compose-prod.yml build --no-cache` if you want to build from scratch
 
 #### Then
 
