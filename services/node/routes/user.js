@@ -22,8 +22,8 @@ const authenticateEmailToken = (req, res, next) => {
   })
 }
 
-// Register a new user
-router.post('/api/register', async (req, res) => {
+// Sign Up a new user
+router.post('/api/signup', async (req, res) => {
   try {
     const email = req.body.email
     const usedEmails = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
@@ -85,7 +85,7 @@ router.post('/api/login', async (req, res) => {
       const accessToken = generateAccessToken(user);
       const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
       const saveToken = pool.query('INSERT INTO tokens (token) VALUES ($1)', [refreshToken])
-      res.json({ accessToken: accessToken, refreshToken: refreshToken })
+      res.json({ accessToken: accessToken, refreshToken: refreshToken, user: user })
     } else {
       res.send('Wrong password');
     }

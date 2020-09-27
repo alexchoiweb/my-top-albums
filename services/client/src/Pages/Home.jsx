@@ -177,6 +177,7 @@ export default function Home() {
   return (
     <div className="App col-12">
       <h1>my-top-albumz</h1>
+      <h1>Landing Page</h1>
       <input
         ref={searchRef}
         type="text"
