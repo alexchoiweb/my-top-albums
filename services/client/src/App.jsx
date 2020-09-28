@@ -40,7 +40,7 @@ export default function App() {
           render={(props) => <Login {...props} setUser={setUser} />}
         />
         <Route path="/signup" component={SignUp} />
-        <AuthRoute path="/edit" component={Edit} />
+        <AuthRoute path="/edit/:listId" component={Edit} />
         <AuthRoute path="/lists" component={Lists} />
       </Switch>
     </Router>
