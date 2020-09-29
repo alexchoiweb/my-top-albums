@@ -31,7 +31,7 @@ export default function App() {
 
   return (
     <Router>
-      {user && <span>{user.user_id}</span>}
+      {user && <span>User Id {user.user_id}</span>}
       <Navbar user={user} />
       <Switch>
         <Route exact path="/" component={Landing} />

@@ -10,6 +10,7 @@ console.log(
   `env variables from client are online?: ${process.env.REACT_APP_SIGNAL}`
 );
 
+// Check if server and db connection is up
 // fetch("/api/users")
 //   .then((res) => res.json())
 //   .then((data) => {
@@ -20,15 +21,15 @@ console.log(
 //     console.log(err);
 //   });
 
-fetch("/api/data")
-  .then((res) => res.json())
-  .then((data) => {
-    console.log("Calling database success");
-    console.log(data);
-  })
-  .catch((err) => {
-    console.log(err);
-  });
+// fetch("/api/data")
+//   .then((res) => res.json())
+//   .then((data) => {
+//     console.log("Calling database success");
+//     console.log(data);
+//   })
+//   .catch((err) => {
+//     console.log(err);
+//   });
 
 const Container = styled.div`
   border: 1px solid lightgrey;
@@ -178,7 +179,7 @@ export default function Home() {
     <div className="App col-12">
       <h1>my-top-albumz</h1>
       <h1>Landing Page</h1>
-      <input
+      {/* <input
         ref={searchRef}
         type="text"
         placeholder="Search album or artist.."
@@ -208,7 +209,7 @@ export default function Home() {
             return <Row key={row.id} row={row} albums={albums} />;
           })}
         </Container>
-      </DragDropContext>
+      </DragDropContext> */}
     </div>
   );
 }

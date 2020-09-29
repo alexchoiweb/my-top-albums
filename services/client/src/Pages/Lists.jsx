@@ -4,6 +4,8 @@ export default function Lists(props) {
   const [lists, setLists] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  console.log(lists);
+
   useEffect(() => {
     const httpHeaders = {
       Authorization: `Bearer ${JSON.parse(
@@ -20,15 +22,14 @@ export default function Lists(props) {
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
         setLists(data);
         setLoading(false);
       })
       .catch((err) => console.log(err));
   }, []);
 
-  const goToEdit = (listId) => {
-    props.history.push({ pathname: `edit/${listId}` });
+  const goToEdit = (list) => {
+    props.history.push({ pathname: `edit/${list.list_id}` });
   };
 
   return (
@@ -39,8 +40,8 @@ export default function Lists(props) {
       ) : (
         <div>
           {lists.map((list, index) => (
-            <h2 key={index} onClick={() => goToEdit(list.list_id)}>
-              {list.list_id}: {list.content}
+            <h2 key={index} onClick={() => goToEdit(list)}>
+              {list.list_id}: {list.title}
             </h2>
           ))}
         </div>
