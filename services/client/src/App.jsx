@@ -1,17 +1,48 @@
-import React from "react";
-import { Route, BrowserRouter as Router } from "react-router-dom";
-import Home from "./Pages/Home";
+import React, { useState, useEffect } from "react";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import Navbar from "./Components/Navbar";
+import Landing from "./Pages/Home";
 import Lists from "./Pages/Lists";
 import Login from "./Pages/Login";
-import Register from "./Pages/Register";
+import Edit from "./Pages/Edit";
+import SignUp from "./Pages/SignUp";
+import AuthRoute from "./Routes/AuthRoute";
 
 export default function App() {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+      fetch("/api/isLoggedIn", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ token }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          setUser(data.user);
+        })
+        .catch((err) => console.log(err));
+    }
+  }, []);
+
   return (
     <Router>
-      <Route exact path="/" component={Home} />
-      <Route path="/login" component={Login} />
-      <Route path="/register" component={Register} />
-      <Route path="/lists" component={Lists} />
+      {user && <span>User Id {user.user_id}</span>}
+      <Navbar user={user} />
+      <Switch>
+        <Route exact path="/" component={Landing} />
+        <Route
+          path="/login"
+          render={(props) => <Login {...props} setUser={setUser} />}
+        />
+        <Route path="/signup" component={SignUp} />
+        <AuthRoute path="/edit/:listId" component={Edit} />
+        <AuthRoute path="/lists" component={Lists} user={user} />
+      </Switch>
     </Router>
   );
 }

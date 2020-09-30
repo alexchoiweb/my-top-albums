@@ -70,6 +70,45 @@ app.get('/api/lists', authenticateToken, async function (req, res) {
   res.json(lists.rows)
 })
 
+// Create new list
+app.post('/api/lists/create', async (req, res) => {
+  try {
+    const insert = await pool.query(`INSERT INTO lists (user_id, title, album_ids, albums) VALUES ($1, $2, $3, $4)`, [req.body.user.user_id, 'New List', [], {}]);
+    const userLists = await pool.query(`SELECT * FROM lists WHERE user_id = $1`, [req.body.user.user_id]);
+    let newListId = 0;
+    userLists.rows.map((list) => {
+      if (list.list_id > newListId) newListId = list.list_id
+    })
+    res.send({ newListId })
+
+  } catch (err) {
+    console.log(err)
+  }
+})
+
+// Update list by id
+app.put('/api/list/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { savedAlbums, albumIds } = req.body;
+    const updateList = await pool.query("UPDATE lists SET albums = $1, album_ids = $2 WHERE list_id = $3", [savedAlbums, albumIds, id]);
+    res.json('List was updated')
+  } catch (err) {
+    console.error(err.message)
+  }
+})
+
+// Delete list by id
+app.delete('/api/lists/delete/:listId', async (req, res) => {
+  try {
+    const { listId } = req.params;
+    const deleteList = await pool.query('DELETE from lists WHERE list_id = $1', [listId])
+    res.json(`List ${listId} was deleted`)
+  } catch (err) {
+    console.log(err)
+  }
+})
+
 // Get all users
 app.get('/api/data', (request, response) => {
   let q = 'SELECT * FROM data';

@@ -8,7 +8,7 @@ require('dotenv').config();
 
 const router = express.Router();
 
-const generateAccessToken = (user) => { return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '5s' }); }
+const generateAccessToken = (user) => { return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1d' }); }
 
 const authenticateEmailToken = (req, res, next) => {
   const token = req.params.token;
@@ -22,8 +22,8 @@ const authenticateEmailToken = (req, res, next) => {
   })
 }
 
-// Register a new user
-router.post('/api/register', async (req, res) => {
+// Sign Up a new user
+router.post('/api/signup', async (req, res) => {
   try {
     const email = req.body.email
     const usedEmails = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
@@ -85,7 +85,7 @@ router.post('/api/login', async (req, res) => {
       const accessToken = generateAccessToken(user);
       const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
       const saveToken = pool.query('INSERT INTO tokens (token) VALUES ($1)', [refreshToken])
-      res.json({ accessToken: accessToken, refreshToken: refreshToken })
+      res.json({ accessToken: accessToken, refreshToken: refreshToken, user: user })
     } else {
       res.send('Wrong password');
     }
@@ -94,6 +94,25 @@ router.post('/api/login', async (req, res) => {
     res.status(500).send();
   }
 });
+
+// Verify JWT / isLoggedIn
+router.post('/api/isLoggedIn', async (req, res) => {
+  const accessToken = JSON.parse(req.body.token);
+  console.log(req.body.token)
+  try {
+    jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET, async (err, user) => {
+      if (err) {
+        console.log(err)
+        res.send('JWT not valid')
+      }
+      else {
+        res.send({ isLoggedIn: true, user: user })
+      }
+    })
+  } catch (err) {
+    console.log(err)
+  }
+})
 
 // Refresh Token
 router.post('/api/refreshToken', async (req, res) => {

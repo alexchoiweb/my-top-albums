@@ -14,7 +14,7 @@ export default function Register() {
     if (password !== passwordConfirm) {
       console.log("Passwords have to match");
     } else {
-      fetch("/api/register", {
+      fetch("/api/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -30,7 +30,7 @@ export default function Register() {
 
   return (
     <div className="Register">
-      <h1>Register Page</h1>
+      <h1>Sign Up Page</h1>
 
       <form onSubmit={submitHandler}>
         <input

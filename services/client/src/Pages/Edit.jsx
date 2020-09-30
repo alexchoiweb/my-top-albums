@@ -1,35 +1,12 @@
-import React, { useState, useRef } from "react";
-import { DragDropContext } from "react-beautiful-dnd";
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import styled from "styled-components";
+import fetchList from "../Helpers/fetchList";
+import saveList from "../Helpers/saveList";
+import { DragDropContext } from "react-beautiful-dnd";
 import initialData from "../initial-data";
-import Row from "../Components/Row";
 import { v4 as uuid } from "uuid";
-
-console.log(`Node environment is: ${process.env.NODE_ENV}`);
-console.log(
-  `env variables from client are online?: ${process.env.REACT_APP_SIGNAL}`
-);
-
-// Check if server and db connection is up
-// fetch("/api/users")
-//   .then((res) => res.json())
-//   .then((data) => {
-//     console.log("Calling server success");
-//     console.log(data);
-//   })
-//   .catch((err) => {
-//     console.log(err);
-//   });
-
-// fetch("/api/data")
-//   .then((res) => res.json())
-//   .then((data) => {
-//     console.log("Calling database success");
-//     console.log(data);
-//   })
-//   .catch((err) => {
-//     console.log(err);
-//   });
+import Row from "../Components/Row";
 
 const Container = styled.div`
   border: 1px solid lightgrey;
@@ -38,19 +15,38 @@ const Container = styled.div`
   flex-direction: column;
 `;
 
-export default function Home() {
-  // console.log(process.env.REACT_APP_ROOT_URL);
+export default function Edit() {
+  const [title, setTitle] = useState(null);
+  const [loading, setLoading] = useState(null);
   const [dragData, setDragData] = useState(initialData);
-  const [searchInput, setSearchInput] = useState(null);
+  const { listId } = useParams();
 
   console.log("**STATE**");
   console.log(dragData);
 
-  const searchRef = useRef(null);
+  useEffect(() => {
+    const getListData = async () => {
+      const list = await fetchList(listId);
+      if (list) {
+        let newDragData = dragData;
+        newDragData.savedAlbums = list.albums;
+        newDragData.rows["row-2"].albumIds = list.album_ids;
+        setDragData(newDragData);
+        setTitle(list.title);
+        setLoading(false);
+      } else {
+        setTitle("List not found, please try again");
+        setLoading(false);
+      }
+    };
+    getListData();
+  }, []);
 
-  const searchAlbums = (searchInput) => {
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const searchInput = e.currentTarget.elements.searchInput.value;
     const url = `${process.env.REACT_APP_ROOT_URL}?method=album.search&album=${searchInput}&api_key=${process.env.REACT_APP_API_KEY}&format=json`;
-    console.log(`Searching albums - fetching: ${url}`);
+
     fetch(url)
       .then((res) => res.json())
       .then((data) => {
@@ -89,8 +85,6 @@ export default function Home() {
 
         setDragData(newDragData);
       });
-    searchRef.current.value = "";
-    setSearchInput(searchRef.current.value);
   };
 
   const onDragEnd = (result) => {
@@ -106,7 +100,27 @@ export default function Home() {
     const start = dragData.rows[source.droppableId];
     const finish = dragData.rows[destination.droppableId];
 
-    // rearranging in same row
+    // delete album
+    if (destination.droppableId === "row-3") {
+      console.log("delete");
+      const newAlbumIds = Array.from(start.albumIds);
+      newAlbumIds.splice(source.index, 1);
+      const newRow = {
+        ...start,
+        albumIds: newAlbumIds,
+      };
+      const newDragData = {
+        ...dragData,
+        rows: {
+          ...dragData.rows,
+          [newRow.id]: newRow,
+        },
+      };
+      setDragData(newDragData);
+      return;
+    }
+
+    // rearrange in same row
     if (start === finish) {
       const newAlbumIds = Array.from(start.albumIds);
       newAlbumIds.splice(source.index, 1);
@@ -176,26 +190,24 @@ export default function Home() {
   };
 
   return (
-    <div className="App col-12">
-      <h1>my-top-albumz</h1>
-      <h1>Landing Page</h1>
-      {/* <input
-        ref={searchRef}
-        type="text"
-        placeholder="Search album or artist.."
-        onChange={() => setSearchInput(searchRef.current.value)}
-      ></input>
-      <button
-        className="btn-primary"
-        onClick={() => {
-          searchAlbums(searchInput);
-        }}
-      >
-        Submit
-      </button>
+    <div>
+      <h1>Edit - {title ? title : null}</h1>
+      {loading ? <span>Loading</span> : null}
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          placeholder="Search album or artist.."
+          name="searchInput"
+        ></input>
+        <button className="btn-primary" type="submit">
+          Submit
+        </button>
+      </form>
+      <button onClick={() => saveList(dragData, listId)}>Save List</button>
 
       <DragDropContext onDragEnd={onDragEnd}>
         <Container>
+          {title ? <h1>list retrieved</h1> : null}
           {dragData.rowOrder.map((rowId) => {
             const row = dragData.rows[rowId];
             let albums;
@@ -209,7 +221,7 @@ export default function Home() {
             return <Row key={row.id} row={row} albums={albums} />;
           })}
         </Container>
-      </DragDropContext> */}
+      </DragDropContext>
     </div>
   );
 }
