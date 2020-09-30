@@ -16,8 +16,13 @@ const initialData = {
       title: "My Albums",
       albumIds: []
     },
+    "row-3": {
+      id: "row-3",
+      title: "Delete",
+      albumIds: []
+    }
   },
-  rowOrder: ["row-1", "row-2"]
+  rowOrder: ["row-1", "row-2", "row-3"]
 }
 
 export default initialData;

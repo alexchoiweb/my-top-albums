@@ -15,6 +15,7 @@ const fetchList = async (listId) => {
     });
     const data = await response.json()
     const requestedList = data.filter((list) => list.list_id === Number(listId));
+    console.log(requestedList);
     return requestedList[0];
   } catch (err) {
     console.log(err);

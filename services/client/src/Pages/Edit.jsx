@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import fetchList from "../Helpers/fetchList";
+import saveList from "../Helpers/saveList";
 import { DragDropContext } from "react-beautiful-dnd";
 import initialData from "../initial-data";
 import { v4 as uuid } from "uuid";
@@ -27,17 +28,15 @@ export default function Edit() {
     const getListData = async () => {
       const list = await fetchList(listId);
       if (list) {
-        // setList(list);
-        // transfer list data to dragData
         let newDragData = dragData;
         newDragData.savedAlbums = list.albums;
         newDragData.rows["row-2"].albumIds = list.album_ids;
         setDragData(newDragData);
         setTitle(list.title);
         setLoading(false);
-
-        // set title of component through list
-        // console.log(list);
+      } else {
+        setTitle("List not found, please try again");
+        setLoading(false);
       }
     };
     getListData();
@@ -101,7 +100,27 @@ export default function Edit() {
     const start = dragData.rows[source.droppableId];
     const finish = dragData.rows[destination.droppableId];
 
-    // rearranging in same row
+    // delete album
+    if (destination.droppableId === "row-3") {
+      console.log("delete");
+      const newAlbumIds = Array.from(start.albumIds);
+      newAlbumIds.splice(source.index, 1);
+      const newRow = {
+        ...start,
+        albumIds: newAlbumIds,
+      };
+      const newDragData = {
+        ...dragData,
+        rows: {
+          ...dragData.rows,
+          [newRow.id]: newRow,
+        },
+      };
+      setDragData(newDragData);
+      return;
+    }
+
+    // rearrange in same row
     if (start === finish) {
       const newAlbumIds = Array.from(start.albumIds);
       newAlbumIds.splice(source.index, 1);
@@ -184,6 +203,7 @@ export default function Edit() {
           Submit
         </button>
       </form>
+      <button onClick={() => saveList(dragData, listId)}>Save List</button>
 
       <DragDropContext onDragEnd={onDragEnd}>
         <Container>

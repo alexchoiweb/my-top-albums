@@ -3,12 +3,16 @@ import { Redirect, Route } from "react-router-dom";
 
 import isAuthenticated from "../Helpers/isAuthenticated";
 
-const AuthRoute = ({ component: Component, path }) => {
+const AuthRoute = ({ component: Component, path, user }) => {
   if (isAuthenticated()) {
-    console.log("is authenticated");
-    return <Route component={Component} path={path} />;
+    return (
+      <Route
+        render={(props) => <Component {...props} user={user} />}
+        path={path}
+      />
+    );
   } else {
-    console.log("redirect");
+    console.log("Pls log in.");
     return <Redirect to="/login" />;
   }
 };

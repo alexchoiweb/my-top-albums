@@ -41,7 +41,7 @@ export default function App() {
         />
         <Route path="/signup" component={SignUp} />
         <AuthRoute path="/edit/:listId" component={Edit} />
-        <AuthRoute path="/lists" component={Lists} />
+        <AuthRoute path="/lists" component={Lists} user={user} />
       </Switch>
     </Router>
   );

@@ -1,31 +1,15 @@
 import React, { useState, useEffect } from "react";
+import fetchUserLists from "../Helpers/fetchUserLists";
+import createList from "../Helpers/createList";
+import deleteList from "../Helpers/deleteList";
 
 export default function Lists(props) {
   const [lists, setLists] = useState(null);
   const [loading, setLoading] = useState(true);
-
-  console.log(lists);
+  const { user } = props;
 
   useEffect(() => {
-    const httpHeaders = {
-      Authorization: `Bearer ${JSON.parse(
-        localStorage.getItem("accessToken")
-      )}`,
-      Refreshtoken: JSON.parse(localStorage.getItem("refreshToken")),
-    };
-
-    const myHeaders = new Headers(httpHeaders);
-
-    fetch("/api/lists", {
-      method: "GET",
-      headers: myHeaders,
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setLists(data);
-        setLoading(false);
-      })
-      .catch((err) => console.log(err));
+    fetchUserLists(setLists, setLoading);
   }, []);
 
   const goToEdit = (list) => {
@@ -39,10 +23,18 @@ export default function Lists(props) {
         <div>Loading...</div>
       ) : (
         <div>
+          <button onClick={() => createList(user, props.history)}>
+            Create New List
+          </button>
           {lists.map((list, index) => (
-            <h2 key={index} onClick={() => goToEdit(list)}>
-              {list.list_id}: {list.title}
-            </h2>
+            <div key={index}>
+              <h2 onClick={() => goToEdit(list)}>
+                {list.list_id}: {list.title}
+              </h2>
+              <button onClick={() => deleteList(list, setLists, setLoading)}>
+                Delete List
+              </button>
+            </div>
           ))}
         </div>
       )}
