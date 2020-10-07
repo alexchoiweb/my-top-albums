@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import fetchList from "../Helpers/fetchList";
-import saveList from "../Helpers/saveList";
+import updateList from "../Helpers/updateList";
 import { DragDropContext } from "react-beautiful-dnd";
 import initialData from "../initial-data";
 import { v4 as uuid } from "uuid";
@@ -26,13 +26,25 @@ export default function Edit() {
 
   useEffect(() => {
     const getListData = async () => {
-      const list = await fetchList(listId);
+      const { list, title } = await fetchList(listId);
+      if (title) setTitle(title);
       if (list) {
-        let newDragData = dragData;
-        newDragData.savedAlbums = list.albums;
-        newDragData.rows["row-2"].albumIds = list.album_ids;
+        let newDragData = dragData,
+          albumIds = [],
+          savedAlbums = {};
+        list.map((list) => {
+          const id = list.album_id;
+          albumIds.push(id);
+          savedAlbums[id] = {
+            id: id,
+            url: list.url,
+            title: list.title,
+            artist: list.artist,
+          };
+        });
+        newDragData.savedAlbums = savedAlbums;
+        newDragData.rows["row-2"].albumIds = albumIds;
         setDragData(newDragData);
-        setTitle(list.title);
         setLoading(false);
       } else {
         setTitle("List not found, please try again");
@@ -102,7 +114,6 @@ export default function Edit() {
 
     // delete album
     if (destination.droppableId === "row-3") {
-      console.log("delete");
       const newAlbumIds = Array.from(start.albumIds);
       newAlbumIds.splice(source.index, 1);
       const newRow = {
@@ -140,24 +151,33 @@ export default function Edit() {
       };
 
       setDragData(newDragData);
-      // call endpoint after performing this update to let server/db know that a re-order has occurred.
     }
     // moving from one row to another
     else {
       // update albums - remove album
       // update row-1.albumIds - remove albumId
       // update savedAlbums - add album
-      // update row-2.albumIds - add albumId
-
+      // update row-2.albumIds - add albumId\
       const newAlbums = dragData.albums;
       let draggedAlbum;
+
       for (let key in newAlbums) {
         if (newAlbums[key].id === draggableId) {
           draggedAlbum = newAlbums[key];
-          delete newAlbums[key];
+          // delete newAlbums[key];
         }
       }
+      console.log(draggedAlbum);
 
+      for (let id in dragData.savedAlbums) {
+        if (
+          dragData.savedAlbums[id].title == draggedAlbum.title &&
+          dragData.savedAlbums[id].artist == draggedAlbum.artist
+        )
+          return;
+      }
+
+      console.log("continued");
       const newSavedAlbums = dragData.savedAlbums;
       newSavedAlbums[draggableId] = draggedAlbum;
       console.log(newSavedAlbums);
@@ -191,7 +211,8 @@ export default function Edit() {
 
   return (
     <div>
-      <h1>Edit - {title ? title : null}</h1>
+      <h1>Edit - {title ? <span id="title">title</span> : null}</h1>
+
       {loading ? <span>Loading</span> : null}
       <form onSubmit={handleSubmit}>
         <input
@@ -203,7 +224,7 @@ export default function Edit() {
           Submit
         </button>
       </form>
-      <button onClick={() => saveList(dragData, listId)}>Save List</button>
+      <button onClick={() => updateList(dragData, listId)}>Save List</button>
 
       <DragDropContext onDragEnd={onDragEnd}>
         <Container>
