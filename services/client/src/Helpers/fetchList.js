@@ -9,14 +9,14 @@ const fetchList = async (listId) => {
   const myHeaders = new Headers(httpHeaders);
 
   try {
-    const response = await fetch("/api/lists", {
+    const response = await fetch(`/api/lists/${listId}`, {
       method: "GET",
       headers: myHeaders,
     });
     const data = await response.json()
-    const requestedList = data.filter((list) => list.list_id === Number(listId));
-    console.log(requestedList);
-    return requestedList[0];
+    const title = data[1].title;
+    const list = data[0]
+    return { list, title };
   } catch (err) {
     console.log(err);
   }

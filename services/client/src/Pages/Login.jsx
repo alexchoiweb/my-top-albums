@@ -32,13 +32,13 @@ export default function Login(props) {
           type="text"
           name="email"
           placeholder="email"
-          value="email"
+          // value="email"
         ></input>
         <input
           type="text"
           name="password"
           placeholder="password"
-          value="pw"
+          // value="pw"
         ></input>
         <button type="submit">Submit</button>
       </form>
