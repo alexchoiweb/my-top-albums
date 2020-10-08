@@ -1,18 +1,14 @@
-import React, { useState, useRef } from "react";
+import React from "react";
 
-export default function Register() {
-  const [email, setEmail] = useState("asdf");
-  const [password, setPassword] = useState("asdf");
-  const [passwordConfirm, setPasswordConfirm] = useState("asdf");
-  const emailRef = useRef(null);
-  const passwordRef = useRef(null);
-  const passwordConfirmRef = useRef(null);
-
-  const submitHandler = (e) => {
+export default function Signup() {
+  const handleSubmit = (e) => {
     e.preventDefault();
-
+    const email = e.currentTarget.elements.email.value;
+    const password = e.currentTarget.elements.password.value;
+    const passwordConfirm = e.currentTarget.elements.passwordConfirm.value;
     if (password !== passwordConfirm) {
-      console.log("Passwords have to match");
+      console.log("password dont match");
+      return;
     } else {
       fetch("/api/signup", {
         method: "POST",
@@ -25,36 +21,25 @@ export default function Register() {
         }),
       });
     }
-    //redirect to login
   };
 
   return (
-    <div className="Register">
+    <div className="Signup">
       <h1>Sign Up Page</h1>
-
-      <form onSubmit={submitHandler}>
+      <form onSubmit={handleSubmit}>
+        <input type="email" name="email" placeholder="email" required></input>
         <input
-          ref={emailRef}
-          type="text"
-          name="email"
-          placeholder="email"
-          onChange={() => setEmail(emailRef.current.value)}
-        ></input>
-        <input
-          ref={passwordRef}
           type="text"
           name="password"
           placeholder="password"
-          onChange={() => setPassword(passwordRef.current.value)}
+          required
         ></input>
         <input
-          ref={passwordConfirmRef}
           type="text"
           name="passwordConfirm"
           placeholder="confirm password"
-          onChange={() => setPasswordConfirm(passwordConfirmRef.current.value)}
+          required
         ></input>
-
         <button type="submit">Submit</button>
       </form>
     </div>
